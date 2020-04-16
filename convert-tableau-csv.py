@@ -153,6 +153,9 @@ with open(args.source, encoding='utf-16') as csvfile:
         # titre_dashboard2_d
         pass
 
+        ## Additional columns
+        target_row['country_abbr'] = "CH"
+
         target_rows.append(target_row)
 
         target_rows.sort(key=lambda k:  k['case_number'])
@@ -161,7 +164,7 @@ with open(args.source, encoding='utf-16') as csvfile:
     #     print(row)
 
 with open(args.target, 'w+', newline='', encoding='utf-8') as target_file:
-    fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'replication_date']
+    fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'replication_date', 'country_abbr']
     writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
     writer.writeheader()
     for row in target_rows:
