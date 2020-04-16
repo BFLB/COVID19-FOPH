@@ -163,7 +163,6 @@ with open(args.source, encoding='utf-16') as csvfile:
 with open(args.target, 'w', newline='', encoding='utf-8') as target_file:
     fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'replication_date']
     writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
-    print(csv.get_dialect)
     writer.writeheader()
     for row in target_rows:
         writer.writerow(row)
