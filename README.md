@@ -16,6 +16,8 @@ The following changes are applied:
 - Translate column names and cell values to english
 - Convert date values to iso-8601 format with timezone offset
 - Convert fields with only 0/1 or N/A values to booleans
+- Add country and canton names in abbreviated, german and english
+- Add country and canton gps location
 - Convert file endings to unix format
   
 The files can be found in the directory data/tableau/converted
