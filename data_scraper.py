@@ -70,7 +70,8 @@ class Scraper():
     time.sleep(10)
     self.driver.find_element(By.CSS_SELECTOR, "#view8489910619019530759_1658786962355642485 .tabCanvas:nth-child(2)").click()
     # Click download
-    self.driver.implicitly_wait(5)
+    #self.driver.implicitly_wait(10)
+    time.sleep(5)
     self.driver.find_element(By.CSS_SELECTOR, ".tab-icon-download").click()
     self.vars["window_handles"] = self.driver.window_handles
     # Click daten
@@ -90,7 +91,7 @@ class Scraper():
     time.sleep(5)
     self.driver.find_element(By.CSS_SELECTOR, ".tab-top-info .csvLink").click()
     self.vars["win5720"] = self.wait_for_window(2000)
-    self.driver.switch_to.window(self.vars["win5720"])
+    #self.driver.switch_to.window(self.vars["win5720"])
     #self.driver.implicitly_wait(10)
     time.sleep(10)
     self.driver.close()
