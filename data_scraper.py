@@ -59,7 +59,7 @@ class Scraper():
     if replication_date != None:
       search_date = "{:02}.{:02}.{}".format(replication_date.day, replication_date.month, replication_date.year)
       if curr_date != search_date:
-        error_message = "Scraping skipped: Replication date {}, wanted {}".format(curr_date, search_date)
+        error_message = "Scraping skipped: Replication date is {}, must be {}".format(curr_date, search_date)
         logging.info(error_message)
         self.driver.close()
         return True
