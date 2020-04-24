@@ -180,19 +180,16 @@ class Converter():
                 target_row['canton_long'] = locations.get(canton).longitude
 
                 # Country name english
-                target_row['country_name_en'] = locations.get("CH").name_en
+                target_row['country_en'] = locations.get("CH").name_en
 
                 # Canton name english 
-                target_row['canton_name_en'] = locations.get(canton).name_en
+                target_row['canton_en'] = locations.get(canton).name_en
 
                 # Country name german
-                target_row['country_name_de'] = locations.get("CH").name_de
+                target_row['country_de'] = locations.get("CH").name_de
 
                 # Canton name german 
-                target_row['canton_name_de'] = locations.get(canton).name_de
-
-
-
+                target_row['canton_de'] = locations.get(canton).name_de
 
                 # Some cases are marked as death but death date is missing. Set death_date_missing and the death date to replication date.
                 # This is not correct but the best we can do.
@@ -212,7 +209,7 @@ class Converter():
         target_rows.sort(key=lambda k:  k['case_number'])
 
         with open('foph_covid19_data_converted_unix.csv', 'w+', newline='', encoding='utf-8') as target_file:
-            fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'death_date_missing', 'replication_date', 'country_abbr', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_name_en', 'canton_name_en', 'country_name_de', 'canton_name_de']
+            fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'death_date_missing', 'replication_date', 'country_abbr', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
             writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
             writer.writeheader()
             for row in target_rows:
