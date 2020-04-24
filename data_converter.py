@@ -211,7 +211,7 @@ class Converter():
         # Sort rows
         target_rows.sort(key=lambda k:  k['case_number'])
 
-        with open('FOPH_Covid19_full_converted_unix.csv', 'w+', newline='', encoding='utf-8') as target_file:
+        with open('foph_covid19_data_converted_unix.csv', 'w+', newline='', encoding='utf-8') as target_file:
             fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'death_date_missing', 'replication_date', 'country_abbr', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_name_en', 'canton_name_en', 'country_name_de', 'canton_name_de']
             writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
             writer.writeheader()
