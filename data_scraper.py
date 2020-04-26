@@ -47,7 +47,7 @@ class Scraper():
     if len(wh_now) > len(wh_then):
       return set(wh_now).difference(set(wh_then)).pop()
   
-  def scrape(self, replication_date):
+  def run(self, replication_date):
     self.driver.get("https://covid-19-schweiz.bagapps.ch/de-1.html")
     self.driver.set_window_size(1920, 1080)
     self.driver.switch_to.frame(0)
@@ -93,7 +93,7 @@ class Scraper():
     self.vars["win5720"] = self.wait_for_window(2000)
     #self.driver.switch_to.window(self.vars["win5720"])
     #self.driver.implicitly_wait(10)
-    time.sleep(10)
+    time.sleep(20)
     self.driver.close()
     self.driver.switch_to.window(self.vars["root"])
     return False

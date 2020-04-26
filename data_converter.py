@@ -28,7 +28,7 @@ import logging
 from templates import Locations
 
 class Converter():
-    def convert(self):
+    def run(self):
 
         locations = Locations()
 

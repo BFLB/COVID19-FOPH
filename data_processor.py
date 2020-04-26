@@ -82,7 +82,7 @@ if args.ignore_date == False:
 
 scraper = Scraper()
 scraper.setup(args.headless)
-skipped = scraper.scrape(today)
+skipped = scraper.run(today)
 scraper.teardown()
 
 if skipped == True:
@@ -90,7 +90,8 @@ if skipped == True:
 
 ### Convert file
 converter = Converter()
-converter.convert()
+converter.run()
+
 
 
 
