@@ -71,25 +71,26 @@ class Scraper():
     self.driver.find_element(By.CSS_SELECTOR, "#view8489910619019530759_1658786962355642485 .tabCanvas:nth-child(2)").click()
     # Click download
     #self.driver.implicitly_wait(10)
-    time.sleep(5)
+    time.sleep(10)
     self.driver.find_element(By.CSS_SELECTOR, ".tab-icon-download").click()
     self.vars["window_handles"] = self.driver.window_handles
     # Click daten
     time.sleep(10)
-    self.driver.find_element(By.CSS_SELECTOR, ".ffzjh44:nth-child(3)").click()
+    self.driver.find_element(By.CSS_SELECTOR, ".fppw03o:nth-child(3)").click()
     self.vars["win3856"] = self.wait_for_window(2000)
     self.vars["root"] = self.driver.current_window_handle
     self.driver.switch_to.window(self.vars["win3856"])
     # Click Vollständige Daten (all data)
     time.sleep(5)
-    self.driver.find_element(By.ID, "tab-view-full-data").click()
+    self.driver.find_element(By.XPATH, "//li[contains(.,\'Full Data\')]").click()
     # Click Alle Spalten anzeigen (all columns)
-    time.sleep(5)
-    self.driver.find_element(By.CSS_SELECTOR, "input").click()
+    time.sleep(10)
+    self.driver.find_element(By.CSS_SELECTOR, ".f81g0pf").click()
     time.sleep(5)
     self.vars["window_handles"] = self.driver.window_handles
-    time.sleep(5)
+    time.sleep(10)
     self.driver.find_element(By.CSS_SELECTOR, ".tab-top-info .csvLink").click()
+    #self.driver.find_element(By.LINK_TEXT, "Alle Zeilen als Textdatei herunterladen").click()
     self.vars["win5720"] = self.wait_for_window(2000)
     #self.driver.switch_to.window(self.vars["win5720"])
     #self.driver.implicitly_wait(10)

@@ -34,7 +34,7 @@ class Pusher():
   
   def run(self):
     git = self.repo.git
-    git.add('Sheet_4_(d)_data.csv')
+    git.add('Sheet_4_(d)_Full_Data_data.csv')
     git.add('foph_covid19_data_converted_unix.csv')
     git.add('last_updated.txt')
     commit_message = "Data updated: "

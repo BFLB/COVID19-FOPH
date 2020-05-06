@@ -32,7 +32,7 @@ class Converter():
 
         locations = Locations()
 
-        with open('Sheet_4_(d)_data.csv', encoding='utf-16') as csvfile:
+        with open('Sheet_4_(d)_Full_Data_data.csv', encoding='utf-16') as csvfile:
             source_rows = csv.DictReader(csvfile, delimiter='\t')
 
             timezone = pytz.timezone("Europe/Zurich")
