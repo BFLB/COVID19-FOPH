@@ -44,29 +44,101 @@ class Converter():
 
                 # All original fields are listed below in unchanged order. Skipped fields are maked with pass statement (noop)
 
+                # Geschlecht
+                gender = source_row['Geschlecht'].lower()
+                gender = gender.replace("männlich","male")
+                gender = gender.replace("weiblich","female")
+                target_row['gender'] = gender
+
+                # Tooltip_incidence_de
+                pass
+
+                # Altersklasse
+                pass
+
+                # Datum
+                pass
+
+                # Kanton
+                canton = source_row['Kanton']
+                target_row['canton_abbr'] = canton
+
+                # ktn
+                pass
+
+                # akl
+                target_row['age_class'] = source_row['akl'].replace(' ', '')
+
+                # Canton
+                pass
+
                 # Classe d'âge
                 pass
 
-                # Canton
-                canton = source_row['Canton']
-                target_row['canton_abbr'] = canton
-
-                # Todesfälle_excluded
+                # Date
                 pass
 
                 # Excluded_for_incomplete_data
                 pass
 
-                # titre_dashboard2_f
+                # fall_dt Date of confirmed infected
+                if source_row['fall_dt'] != "":
+                    case_date = timezone.localize(dateutil.parser.parse(source_row['fall_dt']))
+                    target_row['case_date'] = case_date.isoformat(sep='T', timespec='auto')
+                else:
+                    target_row['case_date'] = None
+
+                # pttoddat
+                if source_row['pttoddat'] != "":
+                    death_date = timezone.localize(dateutil.parser.parse(source_row['pttoddat']))
+                    target_row['death_date'] = death_date.isoformat(sep='T', timespec='auto')
+                else:
+                    target_row['death_date'] = None
+
+                # replikation_dt
+                replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
+                target_row['replication_date'] = replication_timestamp.isoformat(sep='T', timespec='auto')
+
+                # replikation_dt (copy)
                 pass
 
-                # Tooltip_incidence_de
-                pass
-
-               # Anzahl Todesfälle
+                # Sexe
                 pass
 
                 # Switch_Bilan_de
+                pass
+
+                # Switch_Bilan_fr
+                pass
+
+                # titre_dashboard2_d
+                pass
+                
+                # titre_dashboard2_f
+                pass
+
+                # Tooltip_incidence_fr
+                pass
+
+                # Anzahl laborbestätigte Fälle
+                target_row['number_of_confirmed_cases'] = int(source_row['Anzahl laborbestätigte Fälle'])
+                
+               # Anzahl Todesfälle
+                target_row['number_of_death_cases'] = int(source_row['Anzahl Todesfälle'])
+
+                # Cas confirmés en laboratoire
+                pass
+
+                # Cas décédés excluded
+                pass
+
+                # F1
+                target_row['f1'] = int(source_row['F1'])
+
+                # fallklasse_3
+                target_row['case_class_3'] = int(source_row['fallklasse_3'])
+
+                # Laborbestätigte Fälle excluded
                 pass
 
                 # Nombre de cas confirmés en laboratoire
@@ -75,95 +147,23 @@ class Converter():
                 # Nombre de cas décédés
                 pass
 
-                # Date_Décédé_CasConfirmés
-                pass # TODO: cross-check with falldatum
+                # Number of Records
+                target_row['number_of_records'] = int(source_row['Number of Records'])
 
-                # Kanton
-                pass
-
-                # Cas décédés excluded
-                pass
-
-                # Altersklasse
-                pass
-
-                # Datum_Todes_LaborsFälle TODO: cross-check with falldatum, ambiguous field name
-                # Datum_Todes_LaborsFälle TODO: cross-check with falldatum, ambiguous field name
-                #confirmed_date = timezone.localize(dateutil.parser.parse(source_row['Datum_Todes_LaborsFälle']))
-                confirmed_date = timezone.localize(datetime.strptime(source_row['Datum_Todes_LaborsFälle'], '%d.%m.%Y'))
-                target_row['confirmed_date'] = confirmed_date.isoformat(sep='T', timespec='auto')
-
-                # F1
-                target_row['case_number'] = int(source_row['F1'])
-
-                # Geschlecht
-                gender = source_row['Geschlecht']
-                gender = gender.replace("männlich","male")
-                gender = gender.replace("weiblich","female")
-                target_row['gender'] = gender
-
-                # Anzahl der Datensätze
-                pass # TODO: Error if not 1
-
-                # Sexe
-                pass
-
-                # Switch_Bilan_fr
-                pass
-
-                # Tooltip_incidence_fr
-                pass
-
-                # akl
-                target_row['age_class'] = source_row['akl'].replace(' ', '')
-
-                # altersjahr
-                target_row['age'] = source_row['altersjahr']
-
-                # fall_dt
-                case_date = timezone.localize(dateutil.parser.parse(source_row['fall_dt']))
-                target_row['case_date'] = case_date.isoformat(sep='T', timespec='auto')
-
-                # fallklasse
-                case_class = source_row['fallklasse']
-                case_class = case_class.replace("sicherer Fall","confirmed")
-                target_row['case_class'] = case_class
-
-                # ktn
-                pass
-
-                # Anzahl laborbestätigte Fälle
-                target_row['confirmed'] = bool(source_row['Anzahl laborbestätigte Fälle'])
-
-                # pttod
-                death = source_row['pttod']
+                # pttod_1
+                death = source_row['pttod_1']
                 if death == "1":
                     target_row['death'] = True
                 else:
                     target_row['death'] = None
- 
-                # pttoddat
-                if source_row['pttoddat'] != "":
-                    death_date = timezone.localize(dateutil.parser.parse(source_row['pttoddat']))
-                    target_row['death_date'] = death_date.isoformat(sep='T', timespec='auto')
-                else:
-                    target_row['death_date'] = None
-
-                # replikation_dt (copy)
-                pass
-
-                # replikation_dt
-                replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
-                target_row['replication_date'] = replication_timestamp.isoformat(sep='T', timespec='auto')
 
                 # sex
                 pass
 
-                # titre_dashboard2_d
+                # Todesfälle_excluded
                 pass
 
-                ### Additional columns
-
+                ## Additional fields
                 # Country abbreviation
                 target_row['country_abbr'] = "CH"
 
@@ -200,16 +200,11 @@ class Converter():
                 # Add row to rows
                 target_rows.append(target_row)
 
-                ## Checks
-                if case_date != confirmed_date:
-                    logmessage = "Line {}: case_date {} does not match confirmed_date {}".format(index + 1, case_date.isoformat(sep='T', timespec='auto'), confirmed_date.isoformat(sep='T', timespec='auto'))
-                    logging.info(logmessage)
-
         # Sort rows
-        target_rows.sort(key=lambda k:  k['case_number'])
+        target_rows.sort(key=lambda k:  k['f1'])
 
         with open('foph_covid19_data_converted_unix.csv', 'w+', newline='', encoding='utf-8') as target_file:
-            fieldnames = ['case_number', 'case_class', 'case_date', 'canton_abbr', 'gender', 'age_class', 'age', 'confirmed', 'confirmed_date', 'death', 'death_date', 'death_date_missing', 'replication_date', 'country_abbr', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
+            fieldnames = ['gender', 'canton_abbr', 'age_class', 'case_class', 'case_date', 'death_date', 'replication_date', 'number_of_confirmed_cases', 'number_of_death_cases', 'f1', 'case_class_3', 'number_of_records', 'death', 'country_abbr', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
             writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
             writer.writeheader()
             for row in target_rows:

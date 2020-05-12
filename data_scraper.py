@@ -52,9 +52,9 @@ class Scraper():
     self.driver.set_window_size(1920, 1080)
     self.driver.switch_to.frame(0)
     time.sleep(5)
-   #curr_date = self.driver.find_element(By.CSS_SELECTOR, "#title8489910619019530759_8666137308565905127 .tab-textRegion-content div:nth-child(1) > span").text.replace("Bilanz am ","")
-    curr_date = self.driver.find_element(By.CSS_SELECTOR, "#title8489910619019530759_8666137308565905127 span:nth-child(2)").text
-    
+    curr_date = self.driver.find_element(By.CSS_SELECTOR, "#title8489910619019530759_8666137308565905127 .tab-textRegion-content div:nth-child(1) > span").text.replace("Bilanz am ","")
+    #curr_date = self.driver.find_element(By.CSS_SELECTOR, "#title8489910619019530759_8666137308565905127 span:nth-child(2)").text
+
     # Check if data from today #
     if replication_date != None:
       search_date = "{:02}.{:02}.{}".format(replication_date.day, replication_date.month, replication_date.year)
