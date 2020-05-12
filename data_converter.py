@@ -38,7 +38,7 @@ class Converter():
             timezone = pytz.timezone("Europe/Zurich")
 
             target_rows = []
-            for index, source_row in enumerate(source_rows):
+            for source_row in source_rows:
             #for source_row in source_rows:
                 target_row = {}
 
