@@ -7,10 +7,10 @@ https://covid-19-schweiz.bagapps.ch/de-1.html
 
 
 ## Original files
-Orignial files are stored in the directory data/tableau/converted
+Orignial files are stored in the directory data/original/
 
 ## Conveted files
-In order to improve the usability of data, the files are availabled as well in converted, english version.
+In order to improve the usability of data, the files are available as well in converted versions
 The following changes are applied:
 - Remove columns which contain redundant information
 - Translate column names and cell values to english
@@ -19,16 +19,17 @@ The following changes are applied:
 - Add country and canton names in abbreviated, german and english
 - Add country and canton gps location
 - Convert file endings to unix format
-  
-The files can be found in the directory data/tableau/converted
 
-## Scraping
-The files are not directly downloadable and scrapping is not easy as well. 
-Thus the files are scraped and added to the repo manually. As soon as a scraping solution
-exist, the process should be automated
+The converted files are located in data/converted
 
-## Converting
-The original files can be converted with the convert-tableau-csv Python script in the rood directory of this repository.
+## data_processor.py
+data_processor is a Pyhton command line tool to scrap / convert and git-push the data
+
+## Roadmap
+- Convert:
+  - lean file (only non zero datasets)
+
+- Implement test data (Available on FOPH Site since beginning of may)
 
 ## Contribution
 Review, re-use, contribution or comments are highly welcome. If this could be integrated in a better known and maintained repository, it would be great.

@@ -18,9 +18,9 @@ import os
 import logging
 import argparse
 import pytz
-from data_scraper import Scraper
-from data_converter import Converter 
-from data_pusher import Pusher
+from scrappers.cases import CaseScrapper
+from converters.cases import CaseConverter
+from pusher import Pusher
 
 
 
@@ -74,8 +74,8 @@ today = None
 if args.ignore_date == False:
   today = date.today()
   try:
-    with open("last_updated.txt", encoding='utf-8') as last_updated:
-      replication_date = timezone.localize(datetime.fromisoformat(last_updated.read())).date()
+    with open("./data/last_update_cases.txt", encoding='utf-8') as last_update:
+      replication_date = timezone.localize(datetime.fromisoformat(last_update.read())).date()
 
     # Compare with today
     if today.isoformat() == replication_date.isoformat():
@@ -93,10 +93,10 @@ if args.ignore_date == False:
 #### Run scraper
 if args.scrap == True:
   logging.info('Start scrapping')
-  scraper = Scraper()
-  scraper.setup(args.headless)
-  skipped = scraper.run(today)
-  scraper.teardown()
+  scrapper = CaseScrapper()
+  scrapper.setup(args.headless)
+  skipped = scrapper.run(today)
+  scrapper.teardown()
   logging.info('Scrapping finished')
 
   if skipped == True:
@@ -104,21 +104,32 @@ if args.scrap == True:
 else:
   logging.info("Scraping disabled, skipped. Use --scrape to enable")
 
-### Convert file
+### Convert files
 if args.convert == True:
   logging.info('Start converting')
-  converter = Converter()
+  
+  # Convert case file
+  converter = CaseConverter()
   converter.run()
 
   # Update last_updated
-  with open("last_updated.txt", 'w+', newline='') as last_updated:
+  with open("./data/last_update_cases.txt", 'w+', newline='') as last_update:
     if today == None:
       today = date.today()
     today_str = today.isoformat()
-    last_updated.write(today_str)
+    last_update.write(today_str)
+
+
+
   logging.info('Converting finished')
+
 else:
   logging.info("Converting disabled, skipped. Use --convert to enable")
+
+
+
+
+
 
 ### Push data to GitHub
 if args.push == True:
