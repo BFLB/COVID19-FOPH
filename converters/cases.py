@@ -105,10 +105,10 @@ class CaseConverter():
 
                 # replikation_dt
                 replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
-                target_row['replication_date'] = replication_timestamp.isoformat(sep='T', timespec='auto')
+                target_row['last_update'] = replication_timestamp.isoformat(sep='T', timespec='auto')
 
                 if target_row['date'] == None:
-                    target_row['date'] == target_row['replication_date']
+                    target_row['date'] == target_row['last_update']
  
                 # replikation_dt (copy)
                 pass
@@ -132,10 +132,10 @@ class CaseConverter():
                 pass
 
                 # Anzahl laborbestätigte Fälle
-                target_row['number_of_confirmed_cases'] = int(source_row['Anzahl laborbestätigte Fälle'])
+                target_row['infected'] = int(source_row['Anzahl laborbestätigte Fälle'])
                 
                 # Anzahl Todesfälle
-                target_row['number_of_death_cases'] = int(source_row['Anzahl Todesfälle'])
+                target_row['death'] = int(source_row['Anzahl Todesfälle'])
 
                 # Cas confirmés en laboratoire
                 pass
@@ -162,11 +162,7 @@ class CaseConverter():
                 target_row['number_of_records'] = int(source_row['Number of Records'])
 
                 # pttod_1
-                death = source_row['pttod_1']
-                if death == "1":
-                    target_row['death'] = True
-                else:
-                    target_row['death'] = None
+                pass
 
                 # sex
                 pass
@@ -212,7 +208,7 @@ class CaseConverter():
         filename = 'cases_confirmed_full.csv' 
 
         with open(os.path.join('./data/converted/', filename), 'w+', newline='', encoding='utf-8') as target_file:
-            fieldnames = ['gender', 'canton_abbr', 'age_class', 'case_class', 'date', 'replication_date', 'number_of_confirmed_cases', 'number_of_death_cases', 'f1', 'case_class_3', 'number_of_records', 'death', 'country_abbr', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
+            fieldnames = ['last_update', 'date', 'country_abbr', 'canton_abbr', 'age_class', 'gender', 'infected', 'death', 'f1', 'case_class_3', 'number_of_records', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
             writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
             writer.writeheader()
             for row in target_rows:
