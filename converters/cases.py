@@ -66,9 +66,8 @@ class CaseConverter():
                     target_row['date'] = None
 
                 # Kanton
-                canton = source_row['Kanton']
-                target_row['canton_abbr'] = canton
-
+                target_row['canton_abbr'] = source_row['Kanton']
+                
                 # ktn
                 pass
 
@@ -109,7 +108,7 @@ class CaseConverter():
 
                 if target_row['date'] == None:
                     target_row['date'] == target_row['last_update']
- 
+                
                 # replikation_dt (copy)
                 pass
 
@@ -181,22 +180,22 @@ class CaseConverter():
                 target_row['country_long'] = locations.get("CH").longitude
 
                 # Canton latitude
-                target_row['canton_lat'] = locations.get(canton).latitude
+                target_row['canton_lat'] = locations.get(target_row['canton_abbr']).latitude
 
                 # Canton longitude
-                target_row['canton_long'] = locations.get(canton).longitude
+                target_row['canton_long'] = locations.get(target_row['canton_abbr']).longitude
 
                 # Country name english
                 target_row['country_en'] = locations.get("CH").name_en
 
                 # Canton name english 
-                target_row['canton_en'] = locations.get(canton).name_en
+                target_row['canton_en'] = locations.get(target_row['canton_abbr']).name_en
 
                 # Country name german
                 target_row['country_de'] = locations.get("CH").name_de
 
                 # Canton name german 
-                target_row['canton_de'] = locations.get(canton).name_de
+                target_row['canton_de'] = locations.get(target_row['canton_abbr']).name_de
 
                 # Add row to rows
                 target_rows.append(target_row)
