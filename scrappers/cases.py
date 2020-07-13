@@ -96,7 +96,7 @@ class CaseScrapper():
     self.vars["win5720"] = self.wait_for_window(2000)
     #self.driver.switch_to.window(self.vars["win5720"])
     #self.driver.implicitly_wait(10)
-    time.sleep(20)
+    time.sleep(40)
     self.driver.close()
     self.driver.switch_to.window(self.vars["root"])
 

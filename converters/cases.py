@@ -103,7 +103,9 @@ class CaseConverter():
                 pass
 
                 # replikation_dt
-                replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
+                #replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
+                # Date format changed!
+                replication_timestamp = timezone.localize(datetime.strptime(source_row['replikation_dt'], '%d/%m/%Y %H:%M:%S'))
                 target_row['last_update'] = replication_timestamp.isoformat(sep='T', timespec='auto')
 
                 if target_row['date'] == None:
@@ -157,8 +159,8 @@ class CaseConverter():
                 # Nombre de cas décédés
                 pass
 
-                # Number of Records
-                target_row['number_of_records'] = int(source_row['Number of Records'])
+                # Number of Records (Not available anymore)
+                #target_row['number_of_records'] = int(source_row['Number of Records'])
 
                 # pttod_1
                 pass
