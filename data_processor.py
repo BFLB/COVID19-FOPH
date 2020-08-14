@@ -21,6 +21,7 @@ import pytz
 from scrappers.cases import CaseScrapper
 from converters.cases import CaseConverter
 from pusher import Pusher
+import requests
 
 
 
@@ -34,7 +35,7 @@ from pusher import Pusher
 parser = argparse.ArgumentParser(description='Scrape FOPH covid-19 case file from https://covid-19-schweiz.bagapps.ch/de-1.html')
 parser.add_argument("--loglevel", type=str, dest="loglevel", default="WARNING", help='log level')
 parser.add_argument("--logdest", type=str, dest="logdest", default="stdout", help='log file. Defaults to stdout')
-parser.add_argument("--target", type=str, default="./data/tableau/original/foph-covid19-tableau-cases-full-original.csv", help='Target file')
+#parser.add_argument("--target", type=str, default="./data/tableau/original/foph-covid19-tableau-cases-full-original.csv", help='Target file')
 parser.add_argument('--scrap', dest='scrap', action='store_true', help='Scrap data')
 parser.add_argument('--convert', dest='convert', action='store_true', help='Create converted data file')
 parser.add_argument('--push', dest='push', action='store_true', help='Push data to GitHub')
@@ -46,7 +47,6 @@ args = parser.parse_args()
 ### Init
 # Set timezone  
 timezone = pytz.timezone("Europe/Zurich")
-
 
 ### Logging setup
 numeric_level = getattr(logging, args.loglevel.upper(), None)
@@ -60,47 +60,59 @@ else:
 
 logging.debug("logging.level= " + args.loglevel + ", logging.filename=" + args.logdest)
 
-
 # Git Setup
 if args.push == True:
   pusher = Pusher()
   pusher.setup('./')
 
+# if args.ignore_date == False:
+#   today = date.today()
+#   try:
+#     with open("./data/last_update_cases.txt", encoding='utf-8') as last_update:
+#       replication_date = timezone.localize(datetime.fromisoformat(last_update.read())).date()
 
-# Date preparation
-skip = False
-today = None
+#     # Compare with today
+#     if today.isoformat() == replication_date.isoformat():
+#     #if today.day == replication_date.day and today.month == replication_date.month and today.year == replication_date.year:
+#       logging.info("Files are already up to date. Done")
+#       exit()
 
-if args.ignore_date == False:
-  today = date.today()
-  try:
-    with open("./data/last_update_cases.txt", encoding='utf-8') as last_update:
-      replication_date = timezone.localize(datetime.fromisoformat(last_update.read())).date()
+#   except (OSError, IOError, FileNotFoundError) as e:
+#     logging.debug(e)
+#     pass
 
-    # Compare with today
-    if today.isoformat() == replication_date.isoformat():
-    #if today.day == replication_date.day and today.month == replication_date.month and today.year == replication_date.year:
-      logging.info("Files are already up to date. Done")
-      exit()
+#   except Exception:
+#     exit()
 
-  except (OSError, IOError, FileNotFoundError) as e:
-    logging.debug(e)
-    pass
-
-  except Exception:
-    exit()
-
-#### Run scraper
+#### Download File
 if args.scrap == True:
-  logging.info('Start scrapping')
-  scrapper = CaseScrapper()
-  scrapper.setup(args.headless)
-  skipped = scrapper.run(today)
-  scrapper.teardown()
-  logging.info('Scrapping finished')
 
-  if skipped == True:
-    exit()
+  logging.info('Start scrapping')
+
+  # Download population numbers
+  outfile = "data/original/population.xlsx"
+  url = "https://www.bag.admin.ch/dam/bag/de/dokumente/mt/k-und-i/aktuelle-ausbrueche-pandemien/2019-nCoV/covid-19-basisdaten-bevoelkerungszahlen.xlsx.download.xlsx/Population_Size_BFS.xlsx"
+  r = requests.get(url)
+  with open(outfile, 'wb') as f:
+    f.write(r.content)
+  logging.info('Population numbers scrapped')
+
+  # Download cases
+  outfile = "data/original/cases_confirmed_full.xlsx"
+  url = "https://www.bag.admin.ch/dam/bag/de/dokumente/mt/k-und-i/aktuelle-ausbrueche-pandemien/2019-nCoV/covid-19-basisdaten-fallzahlen.xlsx.download.xlsx/Dashboards_1&2_COVID19_swiss_data_pv.xlsx"
+  r = requests.get(url)
+  with open(outfile, 'wb') as f:
+    f.write(r.content)
+  logging.info('Cases scrapped')
+
+  # Download labtests 
+  outfile = "data/original/labtests.xlsx"
+  url = "https://www.bag.admin.ch/dam/bag/de/dokumente/mt/k-und-i/aktuelle-ausbrueche-pandemien/2019-nCoV/covid-19-basisdaten-labortests.xlsx.download.xlsx/Dashboard_3_COVID19_labtests_positivity.xlsx"
+  r = requests.get(url)
+  with open(outfile, 'wb') as f:
+    f.write(r.content)
+  logging.info('Labtests scrapped')
+
 else:
   logging.info("Scraping disabled, skipped. Use --scrape to enable")
 
@@ -113,11 +125,11 @@ if args.convert == True:
   converter.run()
 
   # Update last_updated
-  with open("./data/last_update_cases.txt", 'w+', newline='') as last_update:
-    if today == None:
-      today = date.today()
-    today_str = today.isoformat()
-    last_update.write(today_str)
+  # with open("./data/last_update_cases.txt", 'w+', newline='') as last_update:
+  #   if today == None:
+  #     today = date.today()
+  #   today_str = today.isoformat()
+  #   last_update.write(today_str)
 
 
 

@@ -27,189 +27,130 @@ import sys
 import dateutil.parser
 import logging
 from templates import Locations
+import openpyxl
+from openpyxl import Workbook
+from pandas import read_excel
 
 class CaseConverter():
     def run(self):
 
         locations = Locations()
 
-        with open('data/original/cases_confirmed_full.csv', encoding='utf-16') as csvfile:
-            source_rows = csv.DictReader(csvfile, delimiter='\t')
+        timezone = pytz.timezone("Europe/Zurich")
 
-            timezone = pytz.timezone("Europe/Zurich")
+        target_rows = []
 
-            target_rows = []
-            for source_row in source_rows:
-            #for source_row in source_rows:
-                target_row = {}
+        my_sheet = 'Dashboard_1_2' # change it to your sheet name
+        file_name = 'data/original/cases_confirmed_full.xlsx' # change it to the name of your excel file
+        df = read_excel(file_name, sheet_name = my_sheet)
+        df.fillna("")
+        print(df.head()) # shows headers with top 5 rows
 
-                # All original fields are listed below in unchanged order. Skipped fields are maked with pass statement (noop)
+        # for row in df.itertuples():
+        #     print(row)
 
-                # Geschlecht
-                gender = source_row['Geschlecht'].lower()
-                gender = gender.replace("männlich","male")
-                gender = gender.replace("weiblich","female")
-                target_row['gender'] = gender
+        for row in df.itertuples():
+            target_row = {}
 
-                # Tooltip_incidence_de
-                pass
+            # replikation_dt
+            #replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
+            #replication_dt = row[1]
+            #replication_timestamp = timezone.localize(datetime.strptime(row[1].date_string, '%y.%m.%d %H:%M:%S'))
+            replication_timestamp = row[1]
+            target_row['last_update'] = replication_timestamp.isoformat(sep='T')
 
-                # Altersklasse
-                pass
+            # fall_dt and pttoddat are mutually exclusive. Nevertheless rows may contain both infected and deaths!
+            # Sometimes the date is missing. In this cases we set it to the replication_dt
+            target_row['date'] = replication_timestamp.isoformat(sep='T')
+            
+            # fall_dt
+            fall_dt = row[2]
+            if isinstance(fall_dt, str): # Workaround for stupid nan value
+                if fall_dt != "":
+                    timestamp = timezone.localize(datetime.strptime(fall_dt, '%Y-%m-%d'))
+                    target_row['date'] = timestamp.isoformat(sep='T', timespec='auto')
+ 
+            # ktn
+            target_row['canton_abbr'] = row[3]
 
-                # Datum
-                #date = timezone.localize(dateutil.parser.parse(source_row['Datum']))
-                if source_row['Datum'] != "":
-                    date = datetime.strptime(source_row['Datum'], '%d.%m.%Y')
-                    target_row['date'] = date.isoformat(sep='T', timespec='auto')
-                else:
-                    target_row['date'] = None
+            # akl
+            target_row['age_class'] = row[4].replace(' ', '')
 
-                # Kanton
-                target_row['canton_abbr'] = source_row['Kanton']
+
+            # sex
+            gender_code = row[5]
+            if gender_code == 1:
+                target_row['gender'] = "male"
+            else:
+                target_row['gender'] = "female"
                 
-                # ktn
-                pass
+            # Geschlecht
+            pass
+            
+            
+            # Sexe
+            pass
 
-                # akl
-                target_row['age_class'] = source_row['akl'].replace(' ', '')
 
-                # Canton
-                pass
+            # fallklasse 3
+            #target_row['case_class_3'] = int(row[8]) # Deprecated
+            target_row['infected']     = int(row[8])
 
-                # Classe d'âge
-                pass
 
-                # Date
-                pass
+            # pttoddat
+            pttoddat = row[9]
+            if isinstance(pttoddat, str): # Workaround for stupid nan value
+                if fall_dt != "":
+                    timestamp = timezone.localize(datetime.strptime(pttoddat, '%Y-%m-%d'))
+                    target_row['date'] = timestamp.isoformat(sep='T', timespec='auto')
+                    print(target_row['date'])
 
-                # Excluded_for_incomplete_data
-                pass
 
-                # fall_dt Date of confirmed infected
-                #if source_row['fall_dt'] != "":
-                #    case_date = timezone.localize(dateutil.parser.parse(source_row['fall_dt']))
-                #    target_row['case_date'] = case_date.isoformat(sep='T', timespec='auto')
-                #else:
-                #    target_row['case_date'] = None
-                pass
+            # pttod
+            target_row['death'] = int(row[10])
 
-                # pttoddat
-                #if source_row['pttoddat'] != "":
-                #    death_date = timezone.localize(dateutil.parser.parse(source_row['pttoddat']))
-                #    target_row['death_date'] = death_date.isoformat(sep='T', timespec='auto')
-                #else:
-                #    target_row['death_date'] = None
-                pass
 
-                # replikation_dt
-                #replication_timestamp = timezone.localize(dateutil.parser.parse(source_row['replikation_dt']))
-                # Date format changed!
-                replication_timestamp = timezone.localize(datetime.strptime(source_row['replikation_dt'], '%d/%m/%Y %H:%M:%S'))
-                target_row['last_update'] = replication_timestamp.isoformat(sep='T', timespec='auto')
+            ## Additional fields
+            # Country abbreviation
+            target_row['country_abbr'] = "CH"
 
-                if target_row['date'] == None:
-                    target_row['date'] == target_row['last_update']
-                
-                # replikation_dt (copy)
-                pass
+            # Country latitude
+            target_row['country_lat'] = locations.get("CH").latitude
 
-                # Sexe
-                pass
+            # Country longitude
+            target_row['country_long'] = locations.get("CH").longitude
 
-                # Switch_Bilan_de
-                pass
+            # Canton latitude
+            #try:
+            target_row['canton_lat'] = locations.get(target_row['canton_abbr']).latitude
+            #except: # catch *all* exceptions
+            #    print(row)
+            # Canton longitude
+            target_row['canton_long'] = locations.get(target_row['canton_abbr']).longitude
 
-                # Switch_Bilan_fr
-                pass
+            # Country name english
+            target_row['country_en'] = locations.get("CH").name_en
 
-                # titre_dashboard2_d
-                pass
-                
-                # titre_dashboard2_f
-                pass
+            # Canton name english 
+            target_row['canton_en'] = locations.get(target_row['canton_abbr']).name_en
 
-                # Tooltip_incidence_fr
-                pass
+            # Country name german
+            target_row['country_de'] = locations.get("CH").name_de
 
-                # Anzahl laborbestätigte Fälle
-                target_row['infected'] = int(source_row['Anzahl laborbestätigte Fälle'])
-                
-                # Anzahl Todesfälle
-                target_row['death'] = int(source_row['Anzahl Todesfälle'])
+            # Canton name german 
+            target_row['canton_de'] = locations.get(target_row['canton_abbr']).name_de
 
-                # Cas confirmés en laboratoire
-                pass
-
-                # Cas décédés excluded
-                pass
-
-                # F1
-                target_row['f1'] = int(source_row['F1'])
-
-                # fallklasse_3
-                target_row['case_class_3'] = int(source_row['fallklasse_3'])
-
-                # Laborbestätigte Fälle excluded
-                pass
-
-                # Nombre de cas confirmés en laboratoire
-                pass
-
-                # Nombre de cas décédés
-                pass
-
-                # Number of Records (Not available anymore)
-                #target_row['number_of_records'] = int(source_row['Number of Records'])
-
-                # pttod_1
-                pass
-
-                # sex
-                pass
-
-                # Todesfälle_excluded
-                pass
-
-                ## Additional fields
-                # Country abbreviation
-                target_row['country_abbr'] = "CH"
-
-                # Country latitude
-                target_row['country_lat'] = locations.get("CH").latitude
-
-                # Country longitude
-                target_row['country_long'] = locations.get("CH").longitude
-
-                # Canton latitude
-                target_row['canton_lat'] = locations.get(target_row['canton_abbr']).latitude
-
-                # Canton longitude
-                target_row['canton_long'] = locations.get(target_row['canton_abbr']).longitude
-
-                # Country name english
-                target_row['country_en'] = locations.get("CH").name_en
-
-                # Canton name english 
-                target_row['canton_en'] = locations.get(target_row['canton_abbr']).name_en
-
-                # Country name german
-                target_row['country_de'] = locations.get("CH").name_de
-
-                # Canton name german 
-                target_row['canton_de'] = locations.get(target_row['canton_abbr']).name_de
-
-                # Add row to rows
-                target_rows.append(target_row)
+            # Add row to rows
+            target_rows.append(target_row)
 
             # Sort rows
-            target_rows.sort(key=lambda k:  k['f1'])
+            #target_rows.sort(key=lambda k:  k['f1'])
 
         # Store file
-        filename = 'cases_confirmed_full.csv' 
+        filename = 'cases_confirmed_full_new.csv' 
 
         with open(os.path.join('./data/converted/', filename), 'w+', newline='', encoding='utf-8') as target_file:
-            fieldnames = ['last_update', 'date', 'country_abbr', 'canton_abbr', 'age_class', 'gender', 'infected', 'death', 'f1', 'case_class_3', 'number_of_records', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
+            fieldnames = ['last_update', 'date', 'country_abbr', 'canton_abbr', 'age_class', 'gender', 'infected', 'death', 'country_lat', 'country_long', 'canton_lat', 'canton_long', 'country_en', 'canton_en', 'country_de', 'canton_de']
             writer = csv.DictWriter(target_file, fieldnames=fieldnames, lineterminator="\n")
             writer.writeheader()
             for row in target_rows:
