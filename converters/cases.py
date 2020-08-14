@@ -43,8 +43,8 @@ class CaseConverter():
         my_sheet = 'Dashboard_1_2' # change it to your sheet name
         file_name = 'data/original/cases_confirmed_full.xlsx' # change it to the name of your excel file
         df = read_excel(file_name, sheet_name = my_sheet)
-        df.fillna("")
-        print(df.head()) # shows headers with top 5 rows
+        #df.fillna("")
+        #print(df.head()) # shows headers with top 5 rows
 
         # for row in df.itertuples():
         #     print(row)
@@ -103,7 +103,6 @@ class CaseConverter():
                 if fall_dt != "":
                     timestamp = timezone.localize(datetime.strptime(pttoddat, '%Y-%m-%d'))
                     target_row['date'] = timestamp.isoformat(sep='T', timespec='auto')
-                    print(target_row['date'])
 
 
             # pttod
