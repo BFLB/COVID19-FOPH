@@ -1,0 +1,190 @@
+{
+  "processors": [
+    {
+      "pipeline": {
+        "name": "filebeat-7-8-0-syslog-pri-pipeline"
+      }
+    },
+    {
+      "rename": {
+        "field": "message",
+        "target_field": "log.original"
+      }
+    },
+    {
+      "dissect": {
+        "field": "log.original",
+        "pattern": "<%{}>%{_ingest.timestamp} %{host} %{event.provider}[%{process.id}]: %{_ingest.message}"
+      }
+    },
+    {
+      "kv": {
+        "field": "_ingest.message",
+        "field_split": """ (?=[a-z0-9\_\-]+=)""",
+        "value_split": "=",
+        "prefix": "sophosutm.firewall.",
+        "ignore_missing": true,
+        "ignore_failure": false,
+        "trim_value": "\""
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.srcip",
+        "target_field": "source.ip",
+        "ignore_missing": true
+      }
+    },
+    {
+      "geoip": {
+        "field": "source.ip",
+        "target_field": "source.geo",
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.dstip",
+        "target_field": "destination.ip",
+        "ignore_missing": true
+      }
+    },
+    {
+      "geoip": {
+        "field": "destination.ip",
+        "target_field": "destination.geo",
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.method",
+        "target_field": "http.request.method",
+        "if": "ctx.sophosutm?.firewall?.method != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.statuscode",
+        "target_field": "http.response.status_code",
+        "if": "ctx.sophosutm?.firewall?.statuscode != null"
+      }
+    },
+    {
+      "convert": {
+        "field": "http.response.status_code",
+        "type": "long"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.error",
+        "target_field": "error.message",
+        "if": "ctx.sophosutm?.firewall?.error != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.severity",
+        "target_field": "log.syslog.severity.name",
+        "if": "ctx.sophosutm?.firewall?.severity != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.url",
+        "target_field": "url.full",
+        "if": "ctx.sophosutm?.firewall?.url != null"
+      }
+    },
+    {
+      "grok": {
+        "field": "url.full",
+        "patterns": [
+          "%{URIPROTO:url.scheme}://(?:%{USER:url.username}:(?<url.password>[^@]*)@)?(?:%{IPORHOST:url.domain}(?::%{POSINT:url.port})?)?(?:%{URIPATH:url.path}(?:%{URIPARAM:url.query}))?",
+          "%{IPORHOST:url.domain}(?::%{POSINT:url.port})(?:%{URIPATH:url.path}(?:%{URIPARAM:url.query}))?",
+          "%{URIPATH:url.path}(?:%{URIPARAM:url.query})"
+        ],
+        "if": "ctx.url?.full != null"
+      }
+    },
+    {
+      "dissect": {
+        "field": "url.query",
+        "pattern": "?%{url.query}",
+        "if": "ctx.url?.query != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.action",
+        "target_field": "event.action",
+        "if": "ctx.sophosutm?.firewall?.action != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.action",
+        "target_field": "event.action",
+        "if": "ctx.sophosutm?.firewall?.action != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.sys",
+        "target_field": "event.module",
+        "if": "ctx.sophosutm?.firewall?.sys != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "sophosutm.firewall.id",
+        "target_field": "event.code",
+        "if": "ctx.sophosutm?.firewall?.id != null"
+      }
+    },
+    {
+      "rename": {
+        "field": "host",
+        "target_field": "observer.hostname",
+        "if": "ctx.host != null"
+      }
+    },
+    {
+      "set": {
+        "field": "observer.vendor",
+        "value": "Sophos"
+      }
+    },
+    {
+      "user_agent": {
+        "field": "sophosutm.firewall.ua",
+        "if": "ctx.sophosutm?.firewall?.ua != null"
+      }
+    },
+    {
+      "remove": {
+        "field": "sophosutm.firewall.ua",
+        "if": "ctx.sophosutm?.firewall?.ua != null"
+      }
+    },
+    {
+      "date": {
+        "field": "_ingest.timestamp",
+        "target_field": "timestamp",
+        "formats": [
+          "yyyy:MM:dd-HH:mm:ss"
+        ]
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "error.message",
+        "value": "{{ _ingest.on_failure_message }}"
+      }
+    }
+  ]
+}
+
